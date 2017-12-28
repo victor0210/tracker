@@ -5,19 +5,9 @@
 
   //-----------------------------------------------------Ajax-Section-Start------------------------------------------------------
   class Ajax {
-    send(url, method, data, callbackSuccess, callbackFailed) {
+    send(url, method, data, headers, callbackSuccess, callbackFailed) {
       var xhr = new XMLHttpRequest();  //新建ajax请求，不兼容IE7以下
-      xhr.onreadystatechange = function () {  //注册回调函数
-        if (xhr.readyState === 4) {
-          if (xhr.status === 200) {
-            !!callbackSuccess && callbackSuccess(xhr.responseText);
-          }
-          else {
-            !!callbackFailed && callbackFailed();
-            console.error('Server Error, Please Check Your Server ' + url + 'If Running Well');
-          }
-        }
-      };
+
       if (method === 'get') {  //如果是get方法，需要把data中的数据转化作为url传递给服务器
         if (typeof data === 'object') {
           var data_send = '?';
@@ -32,11 +22,31 @@
       }
       else if (method === 'post') {   //如果是post，需要在头中添加content-type说明
         xhr.open(method, url, true);
-        xhr.setRequestHeader('Content-Type', 'application/json');
-        xhr.send(JSON.stringify(data));//发送的数据需要转化成JSON格式
+        for (var k in headers) {
+          xhr.setRequestHeader(k, headers[k]);
+        }
+
+        setTimeout(function () {
+          xhr.send(JSON.stringify(data));//发送的数据需要转化成JSON格式
+        }, 2000)
       } else {
         return false;
       }
+
+      xhr.onreadystatechange = function () {  //注册回调函数
+        if (xhr.readyState === 4) {
+          if (xhr.status === 200) {
+            console.log('s');
+            if (callbackSuccess != null)
+              callbackSuccess(xhr.responseText);
+          }
+          else {
+            if (callbackFailed != null)
+              callbackFailed();
+            console.error('Server Error, Please Check Your Server ' + url + ' If Well');
+          }
+        }
+      };
     }
   }
 
@@ -61,8 +71,7 @@
       tracker_error_obj: null,
       tracker_agent: null,
       tracker_time: null,
-    }
-    ,
+    },
 
     //错误信息队列管理对象
     report_manager = {
@@ -117,17 +126,12 @@
    *  @description  Tracker Private Functions
    **/
 
-  var _enQueue = () =
-  >
-  {
+  var _enQueue = () => {
     report_manager._queue[report_manager._oldestIndex] = report_obj;
     report_manager._newestIndex++
-  }
-  ;
+  };
 
-  var _deQueue = () =
-  >
-  {
+  var _deQueue = () => {
     let deletedData;
     //判断是否存在假溢出、空队列的情况
     if (report_manager._oldestIndex !== report_manager._newestIndex) {
@@ -138,57 +142,35 @@
     }
 
     throw new Error("Tracker Queue Is Full Stack")
-  }
-  ;
+  };
 
-  var _setTrackerMessage = (msg) =
-  >
-  {
+  var _setTrackerMessage = (msg) => {
     report_obj.tracker_msg = msg;
-  }
-  ;
+  };
 
-  var _setTrackerFileUrl = (url) =
-  >
-  {
+  var _setTrackerFileUrl = (url) => {
     report_obj.tracker_file_url = url;
-  }
-  ;
+  };
 
-  var _setTrackerLine = (line) =
-  >
-  {
+  var _setTrackerLine = (line) => {
     report_obj.tracker_line = line;
-  }
-  ;
+  };
 
-  var _setTrackerColumn = (column) =
-  >
-  {
+  var _setTrackerColumn = (column) => {
     report_obj.tracker_column = column;
-  }
-  ;
+  };
 
-  var _setTrackerErrorObj = (obj) =
-  >
-  {
+  var _setTrackerErrorObj = (obj) => {
     report_obj.tracker_error_obj = obj;
-  }
-  ;
+  };
 
-  var _setTrackerUserAgent = () =
-  >
-  {
+  var _setTrackerUserAgent = () => {
     report_obj.tracker_agent = navigator.userAgent;
-  }
-  ;
+  };
 
-  var _setTrackerTime = () =
-  >
-  {
+  var _setTrackerTime = () => {
     report_obj.tracker_time = Date.now();
-  }
-  ;
+  };
 
   //----------------------------------------------------Tracker-Section-End------------------------------------------------------
 
@@ -199,7 +181,9 @@
     const defaults = {
       report_url: null,
       method: 'post',
-      headers: null,
+      headers: {
+        'Content-Type': 'application/json'
+      },
       callbackSuccess: null,
       callbackFailed: null
     };

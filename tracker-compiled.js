@@ -19,19 +19,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
     _createClass(Ajax, [{
       key: 'send',
-      value: function send(url, method, data, callbackSuccess, callbackFailed) {
+      value: function send(url, method, data, headers, callbackSuccess, callbackFailed) {
         var xhr = new XMLHttpRequest(); //新建ajax请求，不兼容IE7以下
-        xhr.onreadystatechange = function () {
-          //注册回调函数
-          if (xhr.readyState === 4) {
-            if (xhr.status === 200) {
-              !!callbackSuccess && callbackSuccess(xhr.responseText);
-            } else {
-              !!callbackFailed && callbackFailed();
-              console.error('Server Error, Please Check Your Server ' + url + 'If Running Well');
-            }
-          }
-        };
+
         if (method === 'get') {
           //如果是get方法，需要把data中的数据转化作为url传递给服务器
           if ((typeof data === 'undefined' ? 'undefined' : _typeof(data)) === 'object') {
@@ -47,11 +37,29 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         } else if (method === 'post') {
           //如果是post，需要在头中添加content-type说明
           xhr.open(method, url, true);
-          xhr.setRequestHeader('Content-Type', 'application/json');
-          xhr.send(JSON.stringify(data)); //发送的数据需要转化成JSON格式
+          for (var k in headers) {
+            xhr.setRequestHeader(k, headers[k]);
+          }
+
+          setTimeout(function () {
+            xhr.send(JSON.stringify(data)); //发送的数据需要转化成JSON格式
+          }, 2000);
         } else {
           return false;
         }
+
+        xhr.onreadystatechange = function () {
+          //注册回调函数
+          if (xhr.readyState === 4) {
+            if (xhr.status === 200) {
+              console.log('s');
+              if (callbackSuccess != null) callbackSuccess(xhr.responseText);
+            } else {
+              if (callbackFailed != null) callbackFailed();
+              console.error('Server Error, Please Check Your Server ' + url + ' If Well');
+            }
+          }
+        };
       }
     }]);
 
@@ -201,7 +209,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     var defaults = {
       report_url: null,
       method: 'post',
-      headers: null,
+      headers: {
+        'Content-Type': 'application/json'
+      },
       callbackSuccess: null,
       callbackFailed: null
     };
