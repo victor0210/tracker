@@ -24,6 +24,7 @@ params | type	|	default	|	description
 ---- | ---	|	--- |	---
 report_url |	String	| null |	report request server url
 method |  String	|	post |	report request method
+headers	|	Object	|	{	'Content-Type':'application/json'	}	|	request headers
 callbackSuccess	|	Function	|	null	|	callback	after	upload	success
 callbackFailed	|	Function	|	null	|	callback	after	upload	fail
 

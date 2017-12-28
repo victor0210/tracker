@@ -2,13 +2,19 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Track.js</title>
     <script src="tracker-compiled.js" type="text/javascript"></script>
 </head>
 <body>
 <script>
     ErrorTracker.init({
-        report_url: 'http://www.abc.com'
+        report_url: 'http://www.abc.com',
+        callbackSuccess: function () {
+            console.log('Upload Success')
+        },
+        callbackFailed: function () {
+            console.log('Upload Failed')
+        }
     });
 
     var f = window.testErrorTracker();
