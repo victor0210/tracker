@@ -117,12 +117,17 @@
    *  @description  Tracker Private Functions
    **/
 
-  var _enQueue = ()=> {
+  var _enQueue = () =
+  >
+  {
     report_manager._queue[report_manager._oldestIndex] = report_obj;
     report_manager._newestIndex++
-  };
+  }
+  ;
 
-  var _deQueue = ()=> {
+  var _deQueue = () =
+  >
+  {
     let deletedData;
     //判断是否存在假溢出、空队列的情况
     if (report_manager._oldestIndex !== report_manager._newestIndex) {
@@ -133,35 +138,57 @@
     }
 
     throw new Error("Tracker Queue Is Full Stack")
-  };
+  }
+  ;
 
-  var _setTrackerMessage = (msg)=> {
+  var _setTrackerMessage = (msg) =
+  >
+  {
     report_obj.tracker_msg = msg;
-  };
+  }
+  ;
 
-  var _setTrackerFileUrl = (url)=> {
+  var _setTrackerFileUrl = (url) =
+  >
+  {
     report_obj.tracker_file_url = url;
-  };
+  }
+  ;
 
-  var _setTrackerLine = (line)=> {
+  var _setTrackerLine = (line) =
+  >
+  {
     report_obj.tracker_line = line;
-  };
+  }
+  ;
 
-  var _setTrackerColumn = (column)=> {
+  var _setTrackerColumn = (column) =
+  >
+  {
     report_obj.tracker_column = column;
-  };
+  }
+  ;
 
-  var _setTrackerErrorObj = (obj)=> {
+  var _setTrackerErrorObj = (obj) =
+  >
+  {
     report_obj.tracker_error_obj = obj;
-  };
+  }
+  ;
 
-  var _setTrackerUserAgent = ()=> {
+  var _setTrackerUserAgent = () =
+  >
+  {
     report_obj.tracker_agent = navigator.userAgent;
-  };
+  }
+  ;
 
-  var _setTrackerTime = ()=> {
+  var _setTrackerTime = () =
+  >
+  {
     report_obj.tracker_time = Date.now();
-  };
+  }
+  ;
 
   //----------------------------------------------------Tracker-Section-End------------------------------------------------------
 
