@@ -1,6 +1,7 @@
-##Tracker.js
+## Tracker.js
+
 tracker.js is a samll component for uploading front-end-error.
-##Usage
+## Usage
 First import tracker.js to head
 
 ```javascript
@@ -17,7 +18,7 @@ Then init tracker instance in the front of all script
 </script>
 ```
 
-##Options
+## Options
 Options is a json object with these	params	configuration
 
 params | type	|	default	|	description
@@ -27,7 +28,7 @@ method |  String	|	post |	report request method
 callbackSuccess	|	Function	|	null	|	callback	after	upload	success
 callbackFailed	|	Function	|	null	|	callback	after	upload	fail
 
-##Enjoy
+## Enjoy
 ```html
 <!DOCTYPE html>
 <html lang="en">
