@@ -1,14 +1,16 @@
 /**
- * Created by humengtao on 12/28/17.
+ * Created by Dandy on 12/28/17.
+ * Version 1.0.0
+ * License MIT
  */
 (function (g) {
 
   //-----------------------------------------------------Ajax-Section-Start------------------------------------------------------
   class Ajax {
     send(url, method, data, headers, callbackSuccess, callbackFailed) {
-      var xhr = new XMLHttpRequest();  //新建ajax请求，不兼容IE7以下
+      var xhr = new XMLHttpRequest();  //Over IE7 Running Well
 
-      if (method === 'get') {  //如果是get方法，需要把data中的数据转化作为url传递给服务器
+      if (method === 'get') {
         if (typeof data === 'object') {
           var data_send = '?';
           for (var key in data) {
@@ -20,20 +22,18 @@
         xhr.open(method, url + data_send, true);
         xhr.send(null);
       }
-      else if (method === 'post') {   //如果是post，需要在头中添加content-type说明
+      else if (method === 'post') {
         xhr.open(method, url, true);
         for (var k in headers) {
           xhr.setRequestHeader(k, headers[k]);
         }
 
-        setTimeout(function () {
-          xhr.send(JSON.stringify(data));//发送的数据需要转化成JSON格式
-        }, 2000)
+        xhr.send(JSON.stringify(data));   //Convert Send-Data To Json Type
       } else {
         return false;
       }
 
-      xhr.onreadystatechange = function () {  //注册回调函数
+      xhr.onreadystatechange = function () {  //Register Callback Functions
         if (xhr.readyState === 4) {
           if (xhr.status === 200) {
             console.log('s');
@@ -59,10 +59,8 @@
    *  @description  Tracker Private Variable
    **/
   let
-    //用户自定义参数 report url, request method, headers
-    opts = {},
+    opts = {},   //Merged Options
 
-    //错误信息对象
     report_obj = {
       tracker_msg: null,
       tracker_file_url: null,
@@ -73,17 +71,16 @@
       tracker_time: null,
     },
 
-    //错误信息队列管理对象
     report_manager = {
       _queue: {},
-      _oldestIndex: 1,  //队列头部指针
-      _newestIndex: 1,  //队列尾部指针
+      _oldestIndex: 1,  //Pointer Of Report Queue Head
+      _newestIndex: 1,  //Pointer Of Report Queue Tail
     };
 
   /**
-   * @step:  1.listen errors
-   * @step:  2.catch errors & format data & push to report queue
-   * @step:  3.queue actions & report
+   * @step1:  initialize ajax & listen errors
+   * @step2:  catch errors & format data & push to report queue
+   * @step3:  dequeue & send data & callback
    **/
 
   class Tracker {
@@ -95,7 +92,7 @@
 
     /**
      *  @name catchError
-     *  @description 流程控制: 监听错误, 获取错误信息, 队列操作, 上报数据
+     *  @flow-control:  listen & catch errors, format & enqueue, dequeue & report, catch response & run callback
      **/
     listenError() {
       const _this = this;
@@ -119,6 +116,23 @@
 
     reportTrack(data) {
       this.ajax.send(opts.report_url, opts.method, data, opts.headers, opts.callbackSuccess, opts.callbackFailed)
+
+      /* @description: Send Tracker Data With Image & Callback Options Won't Work Anymore
+       *
+       *    var url = REPORT_URL + data.join('||');// 组装错误上报信息内容URL
+       *    var img = new Image;
+       *    img.onload = img.onerror = function(){
+       *      img = null;
+       *    };
+       *    img.src = url;// 发送数据到后台cgi
+       **/
+
+      /* @description: Send Tracker Data With sendBeacon && Callback Options Won't Work Anymore
+       *
+       *   sendBeacon(opts.url,data)
+       **/
+
+      // TODO: reportTrack method with sendBeacon & new Image() request
     }
   }
 
@@ -133,8 +147,8 @@
 
   var _deQueue = () => {
     let deletedData;
-    //判断是否存在假溢出、空队列的情况
-    if (report_manager._oldestIndex !== report_manager._newestIndex) {
+
+    if (report_manager._oldestIndex !== report_manager._newestIndex) {    //Judge Report-Queue If Suppose-Overflow Or Null
       deletedData = report_manager._queue[report_manager._oldestIndex];
       delete report_manager._queue[report_manager._oldestIndex++];
 
